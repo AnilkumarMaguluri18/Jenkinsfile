@@ -3,6 +3,7 @@ pipeline {
 
     environment {
         TF_HOME = tool 'Terraform'
+        TF_EXECUTABLE = "${TF_HOME}\\terraform"
     }
 
     stages {
@@ -19,7 +20,7 @@ pipeline {
             steps {
                 script {
                     // Run Terraform init
-                    bat "\"${TF_HOME}\\terraform\" init -input=false"
+                    bat "\"${TF_EXECUTABLE}\" init -input=false"
                 }
             }
         }
@@ -28,7 +29,7 @@ pipeline {
             steps {
                 script {
                     // Run Terraform plan
-                    bat "\"${TF_HOME}\\terraform\" plan -out=tfplan -input=false"
+                    bat "\"${TF_EXECUTABLE}\" plan -out=tfplan -input=false"
                 }
             }
         }
@@ -37,7 +38,7 @@ pipeline {
             steps {
                 script {
                     // Run Terraform apply
-                    bat "\"${TF_HOME}\\terraform\" apply -input=false -auto-approve tfplan"
+                    bat "\"${TF_EXECUTABLE}\" apply -input=false -auto-approve tfplan"
                 }
             }
         }
@@ -46,7 +47,7 @@ pipeline {
             steps {
                 script {
                     // Run Terraform destroy
-                    bat "\"${TF_HOME}\\terraform\" destroy -input=false -auto-approve"
+                    bat "\"${TF_EXECUTABLE}\" destroy -input=false -auto-approve"
                 }
             }
         }
