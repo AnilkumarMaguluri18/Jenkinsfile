@@ -11,17 +11,17 @@ pipeline {
         stage('Terraform Init') {
             steps {
                 script {
-                    dir('terraform_file') {
+                    dir('vpc_aws.tf') {
                         sh 'terraform init'
                     }
                 }
             }
         }
 
-        stage('Terraform Apply') {
+        stage('vpc_aws.tf') {
             steps {
                 script {
-                    dir('terraform_file') {
+                    dir('vpc_aws.tf') {
                         // Use double quotes around the entire sh command
                         sh "terraform apply -auto-approve -var-file=vpc_aws.tf"
                     }
