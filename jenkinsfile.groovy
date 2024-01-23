@@ -1,10 +1,6 @@
 pipeline {
     agent any
 
-    tools {
-        terraform 'Terraform' // Make sure this matches the tool name configured in Jenkins
-    }
-
     environment {
         TF_HOME = tool 'Terraform'
     }
@@ -12,8 +8,10 @@ pipeline {
     stages {
         stage('Checkout SCM') {
             steps {
-                // Checkout your source code from SCM (Git in this case)
-                checkout([$class: 'GitSCM', branches: [[name: '*/main']], userRemoteConfigs: [[url: 'https://github.com/AnilkumarMaguluri18/Jenkinsfile.git']]])
+                script {
+                    // Your SCM checkout steps
+                    checkout scm
+                }
             }
         }
 
@@ -21,7 +19,7 @@ pipeline {
             steps {
                 script {
                     // Run Terraform init
-                    sh "${TF_HOME}/terraform init -input=false"
+                    bat "\"${TF_HOME}\\terraform\" init -input=false"
                 }
             }
         }
@@ -30,7 +28,7 @@ pipeline {
             steps {
                 script {
                     // Run Terraform plan
-                    sh "${TF_HOME}/terraform plan -out=tfplan -input=false"
+                    bat "\"${TF_HOME}\\terraform\" plan -out=tfplan -input=false"
                 }
             }
         }
@@ -39,7 +37,7 @@ pipeline {
             steps {
                 script {
                     // Run Terraform apply
-                    sh "${TF_HOME}/terraform apply -input=false -auto-approve tfplan"
+                    bat "\"${TF_HOME}\\terraform\" apply -input=false -auto-approve tfplan"
                 }
             }
         }
@@ -48,9 +46,15 @@ pipeline {
             steps {
                 script {
                     // Run Terraform destroy
-                    sh "${TF_HOME}/terraform destroy -input=false -auto-approve"
+                    bat "\"${TF_HOME}\\terraform\" destroy -input=false -auto-approve"
                 }
             }
+        }
+    }
+
+    post {
+        always {
+            // Cleanup steps, if needed
         }
     }
 }
