@@ -55,6 +55,7 @@ pipeline {
     post {
         always {
             // Cleanup steps, if needed
+            echo 'Always run cleanup steps here'
         }
     }
 }
