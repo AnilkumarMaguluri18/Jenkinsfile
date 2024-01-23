@@ -1,24 +1,21 @@
 pipeline {
     agent any
 
-    parameters {
-        booleanParam(name: 'autoApprove', defaultValue: false, description: 'Automatically run apply generating plan?')
+    environment {
+        JENKINS_HOME = tool 'Terraform'
     }
 
     stages {
         stage('Checkout') {
             steps {
-                script {
-                    // Clean workspace before checking out
-                    deleteDir()
-                    
-                    // Checkout Jenkinsfile repository
-                    checkout([$class: 'GitSCM', branches: [[name: '*/main']], userRemoteConfigs: [[url: 'https://github.com/AnilkumarMaguluri18/Jenkinsfile.git']]])
-                    
-                    // Checkout Terraform script repository
-                    dir('terraform') {
-                        checkout([$class: 'GitSCM', branches: [[name: '*/main']], userRemoteConfigs: [[url: 'https://github.com/AnilkumarMaguluri18/terraform_file.git']]])
-                    }
+                checkout([$class: 'GitSCM', branches: [[name: '*/main']], userRemoteConfigs: [[url: 'https://github.com/AnilkumarMaguluri18/Jenkinsfile.git']]])
+            }
+        }
+
+        stage('Checkout Terraform') {
+            steps {
+                dir('terraform') {
+                    checkout([$class: 'GitSCM', branches: [[name: '*/main']], userRemoteConfigs: [[url: 'https://github.com/AnilkumarMaguluri18/terraform_file.git']]])
                 }
             }
         }
@@ -27,24 +24,28 @@ pipeline {
             steps {
                 script {
                     dir('terraform') {
-                        sh 'terraform init'
-                        sh 'terraform plan -out tfplan'
-                        sh 'terraform show -no-color tfplan > tfplan.txt'
+                        withCredentials([usernamePassword(credentialsId: 'my-aws-credentials', passwordVariable: 'TF_API_TOKEN', usernameVariable: 'TF_USERNAME')]) {
+                            script {
+                                // Set Terraform environment variables
+                                env.TF_PLUGIN_CACHE_DIR = "${JENKINS_HOME}\\terraform\\plugins"
+                                env.TF_DATA_DIR = "${JENKINS_HOME}\\terraform\\data"
+                                
+                                // Initialize Terraform
+                                sh 'terraform init -input=false'
+                                
+                                // Run Terraform plan
+                                sh 'terraform plan -out=tfplan -input=false'
+                                sh 'terraform show -no-color tfplan > tfplan.txt'
+                            }
+                        }
                     }
                 }
             }
         }
 
         stage('Approval') {
-            when {
-                expression { params.autoApprove == false }
-            }
             steps {
-                script {
-                    def plan = readFile 'terraform/tfplan.txt'
-                    input message: "Do you want to apply the plan?",
-                          parameters: [text(name: 'plan', description: 'Please review the plan', defaultValue: plan)]
-                }
+                // Your approval steps here
             }
         }
 
@@ -52,7 +53,8 @@ pipeline {
             steps {
                 script {
                     dir('terraform') {
-                        sh 'terraform apply -input=false tfplan'
+                        // Run Terraform apply
+                        sh 'terraform apply -auto-approve tfplan'
                     }
                 }
             }
