@@ -1,32 +1,46 @@
-pipeline {
-    agent any
+Pipeline {
 
-    stages {
-        stage('Checkout Terraform Script') {
-            steps {
-                git url: 'https://github.com/AnilkumarMaguluri18/terraform_file.git', branch: 'main'
-            }
-        }
+parameters {
+booleanparam(name: 'autoApprove', defaultValue: false, description:'Automatically run apply generating plan?')
+}
 
-        stage('Terraform Init') {
-            steps {
-                script {
-                    dir('vpc_aws.tf') {
-                        sh 'terraform init'
-                    }
-                }
-            }
-        }
-
-        stage('vpc_aws.tf') {
-            steps {
-                script {
-                    dir('vpc_aws.tf') {
-                        // Use double quotes around the entire sh command
-                        sh "terraform apply -auto-approve -var-file=vpc_aws.tf"
-                    }
-                }
-            }
-        }
-    }
+agent any
+stages {
+stage('checkout') {
+steps {
+script {
+dir('terraform')
+{
+git "https://github.com/AnilkumarMaguluri18/terraform_file.git"
+}
+}
+}
+}
+Stage('plan') {
+steps {
+sh'pwd;cd terraform/ ; terraform init'
+sh'pwd;cd terraform/ ; terraform plan -out tfplan'
+sh'pwd;cd terraform/ ; terraform show -no-colour tfplan > tfplan.txt'
+}
+}
+stage('Aproval') {
+when {
+not {
+equals expected: true, actual: params.autoApprove
+}
+}
+steps {
+script {
+def paln = readfile 'terraform/tfplan.txt'
+input message: "Do you want to apply the plan?",
+parameters: [text(name: 'plan', description: 'please review the plan', defaultValue: plan)]
+}
+}
+}
+stage('Apply') {
+step {
+sh "pwd;cd terraform/ ; terraform apply -input=false tfplan"
+}
+}
+}
 }
