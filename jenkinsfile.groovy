@@ -22,8 +22,8 @@ pipeline {
             steps {
                 script {
                     dir('terraform_file') {
-                        // Use 'call' to invoke the appropriate command based on OS
-                        bat(script: 'terraform apply -auto-approve -var-file=vpc_aws.tf', returnStatus: true) || sh 'terraform apply -auto-approve -var-file=vpc_aws.tf'
+                        // Use double quotes around the entire sh command
+                        sh "terraform apply -auto-approve -var-file=vpc_aws.tf"
                     }
                 }
             }
