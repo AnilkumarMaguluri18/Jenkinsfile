@@ -5,6 +5,7 @@ pipeline {
         TF_HOME = tool 'Terraform'
         GIT_HOME = tool 'Git'
         TF_EXECUTABLE = "${TF_HOME}\\terraform"
+        GIT_EXECUTABLE = "${GIT_HOME}\\bin\\git"
     }
 
     stages {
