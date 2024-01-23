@@ -3,6 +3,7 @@ pipeline {
 
     environment {
         TF_HOME = tool 'Terraform'
+        GIT_HOME = tool 'Git'
         TF_EXECUTABLE = "${TF_HOME}\\terraform"
     }
 
@@ -10,8 +11,11 @@ pipeline {
         stage('Checkout SCM') {
             steps {
                 script {
+                    // Use the specified Git installation
+                    env.PATH = "${GIT_HOME}\\bin;${env.PATH}"
+                    
                     // Your SCM checkout steps
-                    checkout scm
+                    checkout([$class: 'GitSCM', branches: [[name: '*/main']], doGenerateSubmoduleConfigurations: false, extensions: [], submoduleCfg: [], userRemoteConfigs: [[url: 'https://github.com/AnilkumarMaguluri18/Jenkinsfile.git']]])
                 }
             }
         }
@@ -19,38 +23,14 @@ pipeline {
         stage('Terraform Init') {
             steps {
                 script {
-                    // Run Terraform init
+                    // Use the specified Terraform executable
                     bat "\"${TF_EXECUTABLE}\" init -input=false"
                 }
             }
         }
 
-        stage('Terraform Plan') {
-            steps {
-                script {
-                    // Run Terraform plan
-                    bat "\"${TF_EXECUTABLE}\" plan -out=tfplan -input=false"
-                }
-            }
-        }
+        // Add other stages as needed
 
-        stage('Terraform Apply') {
-            steps {
-                script {
-                    // Run Terraform apply
-                    bat "\"${TF_EXECUTABLE}\" apply -input=false -auto-approve tfplan"
-                }
-            }
-        }
-
-        stage('Terraform Destroy') {
-            steps {
-                script {
-                    // Run Terraform destroy
-                    bat "\"${TF_EXECUTABLE}\" destroy -input=false -auto-approve"
-                }
-            }
-        }
     }
 
     post {
