@@ -2,16 +2,21 @@ pipeline {
     agent any
 
     stages {
-        stage('Checkout') {
+        stage('Checkout Terraform Script') {
             steps {
-                checkout scm
+                // Git clone your Terraform script repository
+                git url: 'https://github.com/AnilkumarMaguluri18/terraform_file.git', branch: 'main'
             }
         }
 
         stage('Terraform Init') {
             steps {
                 script {
-                    sh 'terraform init'
+                    // Change to the directory where your Terraform files are cloned
+                    dir('terraform_file') {
+                        // Run Terraform init
+                        sh 'terraform init'
+                    }
                 }
             }
         }
@@ -19,8 +24,12 @@ pipeline {
         stage('Terraform Apply') {
             steps {
                 script {
-                    withAWS(region: 'us-east-2', credentials: 'my-aws-credentials') {
-                        sh 'terraform apply -auto-approve'
+                    // Change to the directory where your Terraform files are cloned
+                    dir('terraform_file') {
+                        // Run Terraform apply
+                        withAWS(region: 'us-east-2', credentials: 'my-aws-credentials') {
+                            sh 'terraform apply -auto-approve'
+                        }
                     }
                 }
             }
