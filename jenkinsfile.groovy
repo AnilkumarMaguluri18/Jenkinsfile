@@ -2,21 +2,16 @@ pipeline {
     agent any
 
     environment {
-        TF_HOME = tool 'Terraform'
-        GIT_HOME = tool 'Git'
-        TF_EXECUTABLE = "${TF_HOME}\\terraform"
-        GIT_EXECUTABLE = "${GIT_HOME}\\bin\\git"
+        AWS_ACCESS_KEY_ID     = 'AKIAXIWTFG6ECV4CGZU7'
+        AWS_SECRET_ACCESS_KEY = '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
+'
     }
 
     stages {
-        stage('Checkout SCM') {
+        stage('Checkout') {
             steps {
                 script {
-                    // Use the specified Git installation
-                    env.PATH = "${GIT_HOME}\\bin;${env.PATH}"
-                    
-                    // Your SCM checkout steps
-                    checkout([$class: 'GitSCM', branches: [[name: '*/main']], doGenerateSubmoduleConfigurations: false, extensions: [], submoduleCfg: [], userRemoteConfigs: [[url: 'https://github.com/AnilkumarMaguluri18/Jenkinsfile.git']]])
+                    git url: 'https://github.com/AnilkumarMaguluri18/terraform_file.git', branch: 'main'
                 }
             }
         }
@@ -24,20 +19,17 @@ pipeline {
         stage('Terraform Init') {
             steps {
                 script {
-                    // Use the specified Terraform executable
-                    bat "\"${TF_EXECUTABLE}\" init -input=false"
+                    sh 'terraform init'
                 }
             }
         }
 
-        // Add other stages as needed
-
-    }
-
-    post {
-        always {
-            // Cleanup steps, if needed
-            echo 'Always run cleanup steps here'
+        stage('Terraform Apply') {
+            steps {
+                script {
+                    sh 'terraform apply -auto-approve'
+                }
+            }
         }
     }
 }
