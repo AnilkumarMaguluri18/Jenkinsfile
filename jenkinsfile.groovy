@@ -2,8 +2,7 @@ pipeline {
     agent any
 
    environment {
-          AWS_CREDENTIALS_ID = 'my-aws-credentials'
-        REPO_URL = 'https://github.com/AnilkumarMaguluri18/terraform_file.git'
+        AWS_CREDENTIALS_ID = 'my-aws-credentials'
         VPC_PATH = 'path/to/vpc/code'
         EC2_PATH = 'path/to/ec2/code'
      
