@@ -32,7 +32,7 @@ pipeline {
             steps {
                 script {
                     dir(VPC_PATH) {
-                        sh 'terraform plan -out=vpc_plan'
+                        sh 'terraform plan'
                     }
                 }
             }
@@ -42,7 +42,7 @@ pipeline {
             steps {
                 script {
                     dir(VPC_PATH) {
-                        sh 'terraform apply -auto-approve vpc_plan'
+                        sh 'terraform apply -auto-approve'
                     }
                 }
             }
@@ -79,7 +79,7 @@ pipeline {
             steps {
                 script {
                     dir(EC2_PATH) {
-                        sh 'terraform plan -out=ec2_plan'
+                        sh 'terraform plan'
                     }
                 }
             }
@@ -89,7 +89,7 @@ pipeline {
             steps {
                 script {
                     dir(EC2_PATH) {
-                        sh 'terraform apply -auto-approve ec2_plan'
+                        sh 'terraform apply -auto-approve'
                     }
                 }
             }
