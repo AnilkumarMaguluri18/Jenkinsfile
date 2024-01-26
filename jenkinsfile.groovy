@@ -1,12 +1,10 @@
 pipeline {
     agent any
 
-   environment {
+    environment {
         AWS_CREDENTIALS_ID = 'my-aws-credentials'
-        git 'https://github.com/AnilkumarMaguluri18/terraform_file.git'
         VPC_PATH = 'path/to/vpc/code'
         EC2_PATH = 'path/to/ec2/code'
-     
     }
 
     stages {
@@ -59,7 +57,7 @@ pipeline {
         stage('Checkout EC2') {
             steps {
                 script {
-                    git 'https://github.com/AnilkumarMaguluri18/terraform_file.git'  
+                    git 'https://github.com/AnilkumarMaguluri18/ec2.git'
                 }
             }
         }
