@@ -17,7 +17,7 @@ pipeline {
         stage('Terraform Init VPC') {
             steps {
                 script {
-                    dir('path/to/vpc/code') {
+                    {
                         sh 'terraform init'
                     }
                 }
@@ -27,7 +27,7 @@ pipeline {
         stage('Terraform Plan VPC') {
             steps {
                 script {
-                    dir('path/to/vpc/code') {
+                    {
                         sh 'terraform plan -out=vpc_plan'
                     }
                 }
@@ -37,7 +37,7 @@ pipeline {
         stage('Terraform Apply VPC') {
             steps {
                 script {
-                    dir('path/to/vpc/code') {
+                     {
                         sh 'terraform apply -auto-approve vpc_plan'
                     }
                 }
@@ -47,7 +47,7 @@ pipeline {
         stage('Downtime') {
             steps {
                 script {
-                    sleep time: 300, unit: 'MILLISECONDS'
+                    sleep time: 120, unit: 'MILLISECONDS'
                 }
             }
         }
@@ -63,7 +63,7 @@ pipeline {
         stage('Terraform Init EC2') {
             steps {
                 script {
-                    dir('path/to/ec2/code') {
+                    {
                         sh 'terraform init'
                     }
                 }
@@ -73,7 +73,7 @@ pipeline {
         stage('Terraform Plan EC2') {
             steps {
                 script {
-                    dir('path/to/ec2/code') {
+                     {
                         sh 'terraform plan -out=ec2_plan'
                     }
                 }
@@ -83,7 +83,7 @@ pipeline {
         stage('Terraform Apply EC2') {
             steps {
                 script {
-                    dir('path/to/ec2/code') {
+                   {
                         sh 'terraform apply -auto-approve ec2_plan'
                     }
                 }
