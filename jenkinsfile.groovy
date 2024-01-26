@@ -12,8 +12,7 @@ pipeline {
         stage('Checkout VPC') {
             steps {
                 script {
-                    checkout scm
-                    git branch: 'main', url: REPO_URL
+                    git branch: 'main', credentialsId: 'your-git-credentials', url: REPO_URL
                 }
             }
         }
@@ -32,7 +31,7 @@ pipeline {
             steps {
                 script {
                     dir(VPC_PATH) {
-                        sh 'terraform plan'
+                        sh 'terraform plan -out=vpc_plan'
                     }
                 }
             }
@@ -42,7 +41,7 @@ pipeline {
             steps {
                 script {
                     dir(VPC_PATH) {
-                        sh 'terraform apply -auto-approve'
+                        sh 'terraform apply -auto-approve vpc_plan'
                     }
                 }
             }
@@ -59,8 +58,7 @@ pipeline {
         stage('Checkout EC2') {
             steps {
                 script {
-                    checkout scm
-                    git branch: 'main', url: REPO_URL
+                    git branch: 'main', credentialsId: 'your-git-credentials', url: REPO_URL
                 }
             }
         }
@@ -79,7 +77,7 @@ pipeline {
             steps {
                 script {
                     dir(EC2_PATH) {
-                        sh 'terraform plan'
+                        sh 'terraform plan -out=ec2_plan'
                     }
                 }
             }
@@ -89,7 +87,7 @@ pipeline {
             steps {
                 script {
                     dir(EC2_PATH) {
-                        sh 'terraform apply -auto-approve'
+                        sh 'terraform apply -auto-approve ec2_plan'
                     }
                 }
             }
