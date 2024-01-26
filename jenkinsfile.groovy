@@ -17,19 +17,18 @@ pipeline {
         stage('Terraform Init VPC') {
             steps {
                 script {
-                    {
+                    
                         sh 'terraform init'
                     }
                 }
             }
-        }
+        
 
         stage('Terraform Plan VPC') {
             steps {
                 script {
-                    {
+                    
                         sh 'terraform plan -out=vpc_plan'
-                    }
                 }
             }
         }
@@ -37,9 +36,8 @@ pipeline {
         stage('Terraform Apply VPC') {
             steps {
                 script {
-                     {
+                     
                         sh 'terraform apply -auto-approve vpc_plan'
-                    }
                 }
             }
         }
@@ -63,9 +61,8 @@ pipeline {
         stage('Terraform Init EC2') {
             steps {
                 script {
-                    {
+                    
                         sh 'terraform init'
-                    }
                 }
             }
         }
@@ -73,9 +70,7 @@ pipeline {
         stage('Terraform Plan EC2') {
             steps {
                 script {
-                     {
                         sh 'terraform plan -out=ec2_plan'
-                    }
                 }
             }
         }
@@ -83,11 +78,9 @@ pipeline {
         stage('Terraform Apply EC2') {
             steps {
                 script {
-                   {
                         sh 'terraform apply -auto-approve ec2_plan'
-                    }
-                }
             }
         }
     }
+}
 }
