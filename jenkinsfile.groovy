@@ -2,14 +2,18 @@ pipeline {
     agent any
 
     environment {
-       AWS_CREDENTIALS_ID = 'my-aws-credentials'
+        AWS_CREDENTIALS_ID = 'my-aws-credentials'
+        REPO_URL = 'https://github.com/AnilkumarMaguluri18/terraform_file.git'
+        VPC_PATH = 'path/to/vpc/code'
+        EC2_PATH = 'path/to/ec2/code'
     }
 
     stages {
         stage('Checkout VPC') {
             steps {
                 script {
-                    git 'https://github.com/AnilkumarMaguluri18/terraform_file.git'
+                    checkout scm
+                    git branch: 'main', url: REPO_URL
                 }
             }
         }
@@ -17,18 +21,19 @@ pipeline {
         stage('Terraform Init VPC') {
             steps {
                 script {
-                    
+                    dir(VPC_PATH) {
                         sh 'terraform init'
                     }
                 }
             }
-        
+        }
 
         stage('Terraform Plan VPC') {
             steps {
                 script {
-                    
+                    dir(VPC_PATH) {
                         sh 'terraform plan -out=vpc_plan'
+                    }
                 }
             }
         }
@@ -36,8 +41,9 @@ pipeline {
         stage('Terraform Apply VPC') {
             steps {
                 script {
-                     
+                    dir(VPC_PATH) {
                         sh 'terraform apply -auto-approve vpc_plan'
+                    }
                 }
             }
         }
@@ -53,7 +59,8 @@ pipeline {
         stage('Checkout EC2') {
             steps {
                 script {
-                    git 'https://github.com/AnilkumarMaguluri18/terraform_file.git'
+                    checkout scm
+                    git branch: 'main', url: REPO_URL
                 }
             }
         }
@@ -61,8 +68,9 @@ pipeline {
         stage('Terraform Init EC2') {
             steps {
                 script {
-                    
+                    dir(EC2_PATH) {
                         sh 'terraform init'
+                    }
                 }
             }
         }
@@ -70,7 +78,9 @@ pipeline {
         stage('Terraform Plan EC2') {
             steps {
                 script {
+                    dir(EC2_PATH) {
                         sh 'terraform plan -out=ec2_plan'
+                    }
                 }
             }
         }
@@ -78,9 +88,11 @@ pipeline {
         stage('Terraform Apply EC2') {
             steps {
                 script {
+                    dir(EC2_PATH) {
                         sh 'terraform apply -auto-approve ec2_plan'
+                    }
+                }
             }
         }
     }
-}
 }
