@@ -20,7 +20,7 @@ pipeline {
             steps {
                 script {
                     dir('path/to/vpc/code') {
-                        sh 'terraform init'
+                        sh 'terraform_file/vpc_aws.tf terraform init'
                     }
                 }
             }
@@ -30,7 +30,7 @@ pipeline {
             steps {
                 script {
                     dir('path/to/vpc/code') {
-                        sh 'terraform plan -out=vpc_plan'
+                        sh 'terraform_file/vpc_aws.tf terraform plan -out=vpc_plan'
                     }
                 }
             }
