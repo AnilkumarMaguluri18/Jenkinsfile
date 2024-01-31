@@ -40,7 +40,7 @@ pipeline {
             steps {
                 script {
                     dir('path/to/vpc/code') {
-                        sh 'terraform apply -auto-approve vpc_plan'
+                        sh 'terraform_file/vpc_aws.tf terraform apply -auto-approve vpc_plan'
                     }
                 }
             }
