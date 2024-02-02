@@ -1,92 +1,50 @@
 pipeline {
     agent any
-
+    
     environment {
-        AWS_CREDENTIALS_ID = 'my-aws-credentials'
-        VPC_PATH = 'path/to/vpc/code'
-        EC2_PATH = 'path/to/ec2/code'
+       AWS_ACCESS_KEY_ID = credentials('Access-Key')
+       AWS_SECRET_ACCESS_KEY = credentials('Secret-Acess-Key')
+    }
+
+    parameters {
+        choice(
+            choices: ['apply', 'destroy'],
+            description: 'Terraform action to apply or destroy',
+            name: 'action'
+            )
+        
     }
 
     stages {
-        stage('Checkout VPC') {
+        stage('Checkout') {
+            steps {
+                git branch: 'main', url: 'https://github.com/AnilkumarMaguluri18/terraform_file.git'
+            }
+        }
+
+    stage('Terraform Init') {
             steps {
                 script {
-                    git 'https://github.com/AnilkumarMaguluri18/terraform_file.git'
+                    sh 'terraform init'
                 }
             }
         }
 
-        stage('Terraform Init VPC') {
+        stage('Terraform Plan') {
             steps {
                 script {
-                    dir('path/to/vpc/code') {
-                        sh 'terraform_file/vpc_aws.tf terraform init'
-                    }
+                    sh 'terraform plan'
                 }
             }
         }
 
-        stage('Terraform Plan VPC') {
+        stage('Terraform Apply/Destroy') {
             steps {
                 script {
-                    dir('path/to/vpc/code') {
-                        sh 'terraform_file/vpc_aws.tf terraform plan -out=vpc_plan'
-                    }
-                }
-            }
-        }
-
-        stage('Terraform Apply VPC') {
-            steps {
-                script {
-                    dir('path/to/vpc/code') {
-                        sh 'terraform_file/vpc_aws.tf terraform apply -auto-approve vpc_plan'
-                    }
-                }
-            }
-        }
-
-        stage('Downtime') {
-            steps {
-                script {
-                    sleep time: 300, unit: 'MILLISECONDS'
-                }
-            }
-        }
-
-        stage('Checkout EC2') {
-            steps {
-                script {
-                    git 'https://github.com/AnilkumarMaguluri18/ec2.git'
-                }
-            }
-        }
-
-        stage('Terraform Init EC2') {
-            steps {
-                script {
-                    dir('path/to/ec2/code') {
-                        sh 'terraform init'
-                    }
-                }
-            }
-        }
-
-        stage('Terraform Plan EC2') {
-            steps {
-                script {
-                    dir('path/to/ec2/code') {
-                        sh 'terraform plan -out=ec2_plan'
-                    }
-                }
-            }
-        }
-
-        stage('Terraform Apply EC2') {
-            steps {
-                script {
-                    dir('path/to/ec2/code') {
-                        sh 'terraform apply -auto-approve ec2_plan'
+                    if(params.action == 'apply'){
+                        sh 'terraform apply -auto-approve'
+                    } else {
+                        sh 'terraform destroy -auto-approve'
                     }
                 }
             }
